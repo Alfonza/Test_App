@@ -86,8 +86,8 @@ jobs:
           echo "- Time: $(date)\n" >> $README_FILE
           echo "**Error Log:**\n\`\`\`\n${{ steps.deploy_step.outputs.error_log }}\n\`\`\`" >> $README_FILE
 
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
           git add $README_FILE
           git commit -m " Update README with deployment error"
           git push https://${{ secrets.PERSONAL_GH_TOKEN}}@github.com/${{ github.repository }} HEAD:Release
