@@ -94,23 +94,23 @@ jobs:
           git add $README_FILE
           git commit -m " Update README with deployment error"
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD:Release
-      # # Step 4: Send email on failure
-      # - name:  Send Email on Failure
-      #   if: steps.deploy_step.outcome == 'failure'
-      #   uses: dawidd6/action-send-mail@v3
-      #   with:
-      #     server_address: smtp.gmail.com
-      #     server_port: 587
-      #     username: ${{ secrets.MAIL_USER }}
-      #     password: ${{ secrets.MAIL_PASSWORD }}
-      #     subject: " Deployment FAILED"
-      #     to: ${{ secrets.MAIL_TO }}
-      #     from: GitHub CI/CD
-      #     content_type: text/plain
-      #     body: |
-      #       Deployment to EC2 failed.
-      #       Check logs here:
-      #       https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      # Step 4: Send email on failure
+      - name:  Send Email on Failure
+        if: steps.deploy_step.outcome == 'failure'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.MAIL_USER }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: " Deployment FAILED"
+          to: ${{ secrets.MAIL_TO }}
+          from: GitHub CI/CD
+          content_type: text/plain
+          body: |
+            Deployment to EC2 failed.
+            Check logs here:
+            https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
       # # Step : Send Slack notification on failure
       # - name: Send Slack Notification on Failure
