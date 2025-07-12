@@ -2,7 +2,7 @@ name: CI/CD with Error Log in README
 
 on:
   push:
-    branches: [release]
+    branches: [Release]
 
 jobs:
   deploy:
