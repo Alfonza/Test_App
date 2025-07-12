@@ -77,20 +77,20 @@ jobs:
             exit 1
           fi
 
-      # # Step 3: Add failure details to README.md
-      # - name:  Append Failure to README
-      #   if: steps.deploy_step.outcome == 'failure'
-      #   run: |
-      #     echo -e "\n##  Last Deployment Error\n" >> $README_FILE
-      #     echo "- Workflow: [Run Link]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)" >> $README_FILE
-      #     echo "- Time: $(date)\n" >> $README_FILE
-      #     echo "**Error Log:**\n\`\`\`\n${{ steps.deploy_step.outputs.error_log }}\n\`\`\`" >> $README_FILE
+      # Step 3: Add failure details to README.md
+      - name:  Append Failure to README
+        if: steps.deploy_step.outcome == 'failure'
+        run: |
+          echo -e "\n##  Last Deployment Error\n" >> $README_FILE
+          echo "- Workflow: [Run Link]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)" >> $README_FILE
+          echo "- Time: $(date)\n" >> $README_FILE
+          echo "**Error Log:**\n\`\`\`\n${{ steps.deploy_step.outputs.error_log }}\n\`\`\`" >> $README_FILE
 
-      #     git config user.name "${{ github.actor }}"
-      #     git config user.email "${{ github.actor }}@users.noreply.github.com"
-      #     git add $README_FILE
-      #     git commit -m " Update README with deployment error"
-      #     git push https://${{ secrets.PERSONAL_GH_TOKEN}}@github.com/${{ github.repository }} HEAD:Release
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          git add $README_FILE
+          git commit -m " Update README with deployment error"
+          git push https://${{ secrets.PERSONAL_GH_TOKEN}}@github.com/${{ github.repository }} HEAD:Release
 
       # # Step 4: Send email on failure
       # - name:  Send Email on Failure
