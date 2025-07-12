@@ -44,36 +44,37 @@ jobs:
           echo "$KEY" > key.pem
           chmod 600 key.pem
 
-          {
-            ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST << 'EOF'
-              set -e
-              cd /home/ubuntu/app
-              git pull origin release
+          set +e
+          ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST <<EOF
+            set -e
+            cd /home/ubuntu/app
+            git pull origin release
 
-              if [ ! -d "venv" ]; then
-                python3 -m venv venv
-              fi
+            if [ ! -d "venv" ]; then
+              python3 -m venv venv
+            fi
 
-              source venv/bin/activate
-              ./venv/bin/pip install --upgrade pip
-              ./venv/bin/pip install -r requirements.txt
-              pytest
+            source venv/bin/activate
+            ./venv/bin/pip install --upgrade pip
+            ./venv/bin/pip install -r requirements.txt
+            ./venv/bin/pytest
 
-              cd app
-              python3 main.py
-            EOF
-          } || {
+            cd app
+            python3 main.py
+          EOF
+          STATUS=$?
+
+          # Save error log if deployment fails
+          if [ $STATUS -ne 0 ]; then
             echo "Deployment error occurred" > error.txt
             echo "--- SSH Error Log ---" >> error.txt
             ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST 'journalctl -u myapp.service -n 20 --no-pager' >> error.txt || echo "Could not fetch logs"
             cat error.txt
-          }
 
-          # Save error log as output to be used in README step
-          if [ -f error.txt ]; then
             echo "error_log<<EOF" >> $GITHUB_OUTPUT
             cat error.txt >> $GITHUB_OUTPUT
             echo "EOF" >> $GITHUB_OUTPUT
+            exit 1
           fi
 
       # Step 3: Add failure details to README.md
