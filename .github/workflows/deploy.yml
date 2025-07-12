@@ -112,17 +112,17 @@ jobs:
             Check logs here:
             https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
-      # # Step : Send Slack notification on failure
-      # - name: Send Slack Notification on Failure
-      #   if: steps.deploy_step.outcome == 'failure'
-      #   uses: slackapi/slack-github-action@v1.24.0
-      #   with:
-      #     payload: |
-      #       {
-      #         "text": ":x: Deployment to EC2 failed. <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|View logs>"
-      #       }
-      #   env:
-      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      # Step : Send Slack notification on failure
+      - name: Send Slack Notification on Failure
+        if: steps.deploy_step.outcome == 'failure'
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "text": ":x: Deployment to EC2 failed. <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|View logs>"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
       # # Step 6: Create version tag on success
       # - name:  Create Git Tag
