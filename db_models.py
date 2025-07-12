@@ -116,11 +116,40 @@ class Customer(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: Optional[str] = Field(default=None, max_length=255)
     phone_num: str = Field(sa_column_kwargs={"unique": True}, max_length=10, nullable=False)
-
+    email_id : str = Field(default=None, unique = True)
+    gender : str 
     bookings: List["Booking"] = Relationship(back_populates="customer")
 
     saved_hotel: List["SavedHotels"] = Relationship(back_populates="customer")
 
+    @classmethod
+    def read_row(cls,session,customer_id):
+        return session.query(cls).filter(
+            cls.id == customer_id
+        ).first()
+    @classmethod
+    def update_row(cls,session,customer_id,update_dict):
+        customer = session.exec(select(cls).where(cls.id == customer_id)).first()
+        print(update_dict)
+        print(customer)
+        if not customer:
+            raise ValueError("Customer not found")
+
+        # Update fields if provided
+        if "name" in update_dict:
+            customer.name = update_dict["name"]
+
+        if "phone_num" in update_dict:
+            customer.phone_num = update_dict["phone_num"]
+
+        if "gender" in update_dict:
+            customer.gender = update_dict["gender"]
+
+        session.add(customer)   # Not strictly required, but safe
+        session.commit()
+        session.refresh(customer)
+        return customer
+    
 class Booking(SQLModel, table=True):
     __tablename__ = "bookings"
 

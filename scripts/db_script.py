@@ -6,8 +6,8 @@ from faker import Faker
 import random
 import json
 
-# parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-# sys.path.append(parent_dir)
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.append(parent_dir)
 from db_models import City, College,Hotel,Customer,Booking,OwnerBooking,DeactivationDate,SavedHotels
 from db_connect import engine,create_db_and_tables       # Your SQLAlchemy engine
 
@@ -55,7 +55,7 @@ with Session(engine) as session:
     session.add_all([owner_booked_first,owner_booked_second,owner_booked_third])
     session.commit()
 
-    customer_one = Customer(id=1,name="rajeev",phone_num="8889991110")
+    customer_one = Customer(id=1,name="rajeev",phone_num="8889991110",gender="m",email_id="abc@gmail.com")
     session.add_all([customer_one])
     session.commit()
 

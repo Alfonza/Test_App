@@ -1,5 +1,5 @@
-from pydantic import BaseModel, StringConstraints,Field,conint
-from typing import Annotated,Union
+from pydantic import BaseModel, StringConstraints,Field,conint,EmailStr,model_validator
+from typing import Annotated,Union,Literal
 from datetime import date
 
 class OTPRequest(BaseModel):
@@ -78,6 +78,22 @@ class pastBookingResponse(BaseModel):
     refundable_before_day: int
     is_available:bool=True
     is_saved:bool
+
+class getCustomerProfileResponse(BaseModel):
+    name: str = Field(..., min_length=1, max_length=100)
+    phone_num: str = Field(..., pattern=r"^\+?[0-9]{10,15}$")
+    gender: str = Literal["m","f"]
+    email_id:EmailStr
+class putCustomerProfileRequest(BaseModel):
+    name:str = ""
+    phone_num:str = ""
+    email_id:str = ""
+
+    @model_validator(mode="after")
+    def at_least_one_field_required(self):
+        if not (self.name or self.phone_num or self.email_id):
+            raise ValueError("At least one of 'name', 'phone_num', or 'email_id' must be provided.")
+        return self
 
 class verifyBookingRequest(BaseModel):
     token:str

@@ -3,14 +3,25 @@ import string
 from utils import decode_jwt
 import random
 from db_connect import SessionDep
-from pydantic_models import postSaveRequest,postSaveResponse,getCityListResponse,querySearchRequest,querySearchResponse,postBookingRequest,verifyBookingRequest
-from db_models import College,Hotel,SavedHotels,Booking
+from pydantic_models import postSaveRequest,postSaveResponse,getCityListResponse,querySearchRequest,querySearchResponse,postBookingRequest,verifyBookingRequest,getCustomerProfileResponse,putCustomerProfileRequest
+from db_models import College,Hotel,SavedHotels,Booking,Customer
 customer_router=APIRouter(prefix="/customer")
 
 @customer_router.get("/colleges")
 def get_colleges_by_city(session:SessionDep) -> list[getCityListResponse]:
     college_list = College.get_all_list(session)
     return college_list
+
+@customer_router.get("/profile")
+def get_customer_profile(session:SessionDep,user_details=Depends(decode_jwt)) -> getCustomerProfileResponse:
+    customer_id = user_details["customer_id"]
+    result =  Customer.read_row(session,customer_id)
+    return result
+
+@customer_router.put("/profile")
+def put_customer_profile(session:SessionDep,request:putCustomerProfileRequest,user_details=Depends(decode_jwt)):
+    customer_id = user_details["customer_id"]
+    return Customer.update_row(session,customer_id,request.model_dump())
 
 @customer_router.get("/colleges/{college_id}/hotels")
 def search_for_hotels(

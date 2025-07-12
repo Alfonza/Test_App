@@ -48,6 +48,23 @@ BOOKING_ITEM
 
 ENDPOINTS
 ---------
+GET /customer/profile
+	Description : get basic profile of customer
+
+	Response:
+		200:
+			{
+				name:str,
+				phone_num:str,
+				email_id:str,
+				gender:str
+			}
+PUT /customer/profile
+	Description : update fields in profile
+	
+	Response:
+		200 : successfully updated 
+		422 : request body error
 POST /customer/booking
 	Description: initiate booking Request
 
