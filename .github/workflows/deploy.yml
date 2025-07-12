@@ -1,0 +1,132 @@
+name: CI/CD with Error Log in README
+
+on:
+  push:
+    branches: [release]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      README_FILE: README.md
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      # Step 1: Clear previous error section in README.md
+      - name:  Clear Old Error Section
+        run: |
+          awk '/##  Last Deployment Error/{flag=1; next} /^## /{flag=0} !flag' $README_FILE > temp && mv temp $README_FILE
+
+      # # Step 2: Setup Python and install requirements (for tests)
+      # - name:  Setup Python
+      #   uses: actions/setup-python@v5
+      #   with:
+      #     python-version: '3.11'
+
+      # - name: Install Dependencies
+      #   run: pip install -r requirements.txt
+
+      # - name:  Run Tests
+      #   run: pytest
+
+      # Step 2: Deploy to EC2 with venv setup
+      - name: Deploy to EC2
+        id: deploy_step
+        continue-on-error: true
+        env:
+          HOST: ${{ secrets.EC2_HOST }}
+          USER: ${{ secrets.EC2_USER }}
+          KEY: ${{ secrets.EC2_SSH_KEY }}
+        run: |
+          echo "$KEY" > key.pem
+          chmod 600 key.pem
+
+          {
+            ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST << 'EOF'
+              set -e
+              cd /home/ubuntu/app
+              git pull origin release
+
+              if [ ! -d "venv" ]; then
+                python3 -m venv venv
+              fi
+
+              source venv/bin/activate
+              ./venv/bin/pip install --upgrade pip
+              ./venv/bin/pip install -r requirements.txt
+              pytest
+
+              cd app
+              python3 main.py
+            EOF
+          } || {
+            echo "Deployment error occurred" > error.txt
+            echo "--- SSH Error Log ---" >> error.txt
+            ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST 'journalctl -u myapp.service -n 20 --no-pager' >> error.txt || echo "Could not fetch logs"
+            cat error.txt
+          }
+
+          # Save error log as output to be used in README step
+          if [ -f error.txt ]; then
+            echo "error_log<<EOF" >> $GITHUB_OUTPUT
+            cat error.txt >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          fi
+
+      # Step 3: Add failure details to README.md
+      - name:  Append Failure to README
+        if: steps.deploy_step.outcome == 'failure'
+        run: |
+          echo -e "\n##  Last Deployment Error\n" >> $README_FILE
+          echo "- Workflow: [Run Link]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)" >> $README_FILE
+          echo "- Time: $(date)\n" >> $README_FILE
+          echo "**Error Log:**\n\`\`\`\n${{ steps.deploy_step.outputs.error_log }}\n\`\`\`" >> $README_FILE
+
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add $README_FILE
+          git commit -m " Update README with deployment error"
+          git push https://${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }} HEAD:release
+
+      # Step 4: Send email on failure
+      - name:  Send Email on Failure
+        if: steps.deploy_step.outcome == 'failure'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.MAIL_USER }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: " Deployment FAILED"
+          to: ${{ secrets.MAIL_TO }}
+          from: GitHub CI/CD
+          content_type: text/plain
+          body: |
+            Deployment to EC2 failed.
+            Check logs here:
+            https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+      # Step : Send Slack notification on failure
+      - name: Send Slack Notification on Failure
+        if: steps.deploy_step.outcome == 'failure'
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "text": ":x: Deployment to EC2 failed. <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|View logs>"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      # Step 6: Create version tag on success
+      - name:  Create Git Tag
+        if: steps.deploy_step.outcome == 'success'
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          VERSION_TAG="v1.0.${{ github.run_number }}"
+          git tag $VERSION_TAG
+          git push origin $VERSION_TAG
