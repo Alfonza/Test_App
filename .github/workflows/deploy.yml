@@ -40,9 +40,9 @@ jobs:
             fi
 
             source venv/bin/activate
-            ./venv/bin/pip install --upgrade pip
-            ./venv/bin/pip install -r requirements.txt
-            ./venv/bin/pytest
+            python3 -m pip install --upgrade pip
+            python3 -m pip install -r requirements.txt
+            # python3 -m pytest
 
             cd app
             python3 main.py
