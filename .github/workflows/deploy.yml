@@ -77,57 +77,57 @@ jobs:
             exit 1
           fi
 
-      # Step 3: Add failure details to README.md
-      - name:  Append Failure to README
-        if: steps.deploy_step.outcome == 'failure'
-        run: |
-          echo -e "\n##  Last Deployment Error\n" >> $README_FILE
-          echo "- Workflow: [Run Link]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)" >> $README_FILE
-          echo "- Time: $(date)\n" >> $README_FILE
-          echo "**Error Log:**\n\`\`\`\n${{ steps.deploy_step.outputs.error_log }}\n\`\`\`" >> $README_FILE
+      # # Step 3: Add failure details to README.md
+      # - name:  Append Failure to README
+      #   if: steps.deploy_step.outcome == 'failure'
+      #   run: |
+      #     echo -e "\n##  Last Deployment Error\n" >> $README_FILE
+      #     echo "- Workflow: [Run Link]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)" >> $README_FILE
+      #     echo "- Time: $(date)\n" >> $README_FILE
+      #     echo "**Error Log:**\n\`\`\`\n${{ steps.deploy_step.outputs.error_log }}\n\`\`\`" >> $README_FILE
 
-          git config user.name "${{ github.actor }}"
-          git config user.email "${{ github.actor }}@users.noreply.github.com"
-          git add $README_FILE
-          git commit -m " Update README with deployment error"
-          git push https://${{ secrets.PERSONAL_GH_TOKEN}}@github.com/${{ github.repository }} HEAD:Release
+      #     git config user.name "${{ github.actor }}"
+      #     git config user.email "${{ github.actor }}@users.noreply.github.com"
+      #     git add $README_FILE
+      #     git commit -m " Update README with deployment error"
+      #     git push https://${{ secrets.PERSONAL_GH_TOKEN}}@github.com/${{ github.repository }} HEAD:Release
 
-      # Step 4: Send email on failure
-      - name:  Send Email on Failure
-        if: steps.deploy_step.outcome == 'failure'
-        uses: dawidd6/action-send-mail@v3
-        with:
-          server_address: smtp.gmail.com
-          server_port: 587
-          username: ${{ secrets.MAIL_USER }}
-          password: ${{ secrets.MAIL_PASSWORD }}
-          subject: " Deployment FAILED"
-          to: ${{ secrets.MAIL_TO }}
-          from: GitHub CI/CD
-          content_type: text/plain
-          body: |
-            Deployment to EC2 failed.
-            Check logs here:
-            https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      # # Step 4: Send email on failure
+      # - name:  Send Email on Failure
+      #   if: steps.deploy_step.outcome == 'failure'
+      #   uses: dawidd6/action-send-mail@v3
+      #   with:
+      #     server_address: smtp.gmail.com
+      #     server_port: 587
+      #     username: ${{ secrets.MAIL_USER }}
+      #     password: ${{ secrets.MAIL_PASSWORD }}
+      #     subject: " Deployment FAILED"
+      #     to: ${{ secrets.MAIL_TO }}
+      #     from: GitHub CI/CD
+      #     content_type: text/plain
+      #     body: |
+      #       Deployment to EC2 failed.
+      #       Check logs here:
+      #       https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
-      # Step : Send Slack notification on failure
-      - name: Send Slack Notification on Failure
-        if: steps.deploy_step.outcome == 'failure'
-        uses: slackapi/slack-github-action@v1.24.0
-        with:
-          payload: |
-            {
-              "text": ":x: Deployment to EC2 failed. <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|View logs>"
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      # # Step : Send Slack notification on failure
+      # - name: Send Slack Notification on Failure
+      #   if: steps.deploy_step.outcome == 'failure'
+      #   uses: slackapi/slack-github-action@v1.24.0
+      #   with:
+      #     payload: |
+      #       {
+      #         "text": ":x: Deployment to EC2 failed. <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|View logs>"
+      #       }
+      #   env:
+      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
-      # Step 6: Create version tag on success
-      - name:  Create Git Tag
-        if: steps.deploy_step.outcome == 'success'
-        run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-          VERSION_TAG="v1.0.${{ github.run_number }}"
-          git tag $VERSION_TAG
-          git push origin $VERSION_TAG
+      # # Step 6: Create version tag on success
+      # - name:  Create Git Tag
+      #   if: steps.deploy_step.outcome == 'success'
+      #   run: |
+      #     git config user.name "github-actions"
+      #     git config user.email "actions@github.com"
+      #     VERSION_TAG="v1.0.${{ github.run_number }}"
+      #     git tag $VERSION_TAG
+      #     git push origin $VERSION_TAG
