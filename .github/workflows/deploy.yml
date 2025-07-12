@@ -4,7 +4,7 @@ on:
   push:
     branches: [Release]
 permissions:
-  contents: write 
+  contents: write
 
 jobs:
   deploy:
@@ -16,23 +16,6 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
-
-      # # Step 1: Clear previous error section in README.md
-      # - name:  Clear Old Error Section
-      #   run: |
-      #     awk '/##  Last Deployment Error/{flag=1; next} /^## /{flag=0} !flag' $README_FILE > temp && mv temp $README_FILE
-
-      # # Step 2: Setup Python and install requirements (for tests)
-      # - name:  Setup Python
-      #   uses: actions/setup-python@v5
-      #   with:
-      #     python-version: '3.11'
-
-      # - name: Install Dependencies
-      #   run: pip install -r requirements.txt
-
-      # - name:  Run Tests
-      #   run: pytest
 
       # Step 2: Deploy to EC2 with venv setup
       - name: Deploy to EC2
@@ -66,17 +49,16 @@ jobs:
           EOF
           STATUS=$?
 
-          # Save error log if deployment fails
           if [ $STATUS -ne 0 ]; then
             echo "Deployment error occurred" > error.txt
             echo "--- SSH Error Log ---" >> error.txt
-            ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST 'journalctl -u myapp.service -n 20 --no-pager' >> error.txt || echo "Could not fetch logs"
+            ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST 'journalctl -u myapp.service -n 20 --no-pager' >> error.txt || echo "Could not fetch logs" >> error.txt
             cat error.txt
 
-            # Save the error log in a GitHub Actions output-friendly way
-            echo "error_log<<EOF" >> $GITHUB_ENV
-            cat error.txt >> $GITHUB_ENV
-            echo "EOF" >> $GITHUB_ENV
+            # Set output for next step
+            echo "error_log<<EOF" >> $GITHUB_OUTPUT
+            cat error.txt >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
 
             exit 1
           fi
@@ -94,7 +76,7 @@ jobs:
           echo "- Time: $(date)\n" >> $README_FILE
           echo "**Error Log:**" >> $README_FILE
           echo '```' >> $README_FILE
-          echo "$error_log" >> $README_FILE
+          echo "${{ steps.deploy_step.outputs.error_log }}" >> $README_FILE
           echo '```' >> $README_FILE
 
           git config user.name "${{ github.actor }}"
@@ -102,9 +84,10 @@ jobs:
           git pull origin Release
           git add $README_FILE
           git commit -m "Update README with latest deployment error"
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD:Release
+
       # Step 4: Send email on failure
-      - name:  Send Email on Failure
+      - name: Send Email on Failure
         if: steps.deploy_step.outcome == 'failure'
         uses: dawidd6/action-send-mail@v3
         with:
@@ -121,7 +104,7 @@ jobs:
             Check logs here:
             https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
-      # Step : Send Slack notification on failure
+      # Step 5: Send Slack notification on failure
       - name: Send Slack Notification on Failure
         if: steps.deploy_step.outcome == 'failure'
         uses: slackapi/slack-github-action@v1.24.0
@@ -134,7 +117,7 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
       # Step 6: Create version tag on success
-      - name:  Create Git Tag
+      - name: Create Git Tag
         if: steps.deploy_step.outcome == 'success'
         run: |
           git config user.name "github-actions"
