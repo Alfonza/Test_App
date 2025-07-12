@@ -47,7 +47,7 @@ jobs:
           set +e
           ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST <<EOF
             set -e
-            cd /home/ubuntu/app
+            cd /home/ubuntu/CICD_TEST/Test_App
             git pull origin Release
 
             if [ ! -d "venv" ]; then
