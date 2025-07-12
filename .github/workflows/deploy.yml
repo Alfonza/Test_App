@@ -3,6 +3,8 @@ name: CI/CD with Error Log in README
 on:
   push:
     branches: [Release]
+permissions:
+  contents: write 
 
 jobs:
   deploy:
@@ -80,8 +82,7 @@ jobs:
       # Step 3: Add failure details to README.md
       - name:  Append Failure to README
         if: steps.deploy_step.outcome == 'failure'
-        permissions:
-          contents: write
+        
         run: |
           echo -e "\n##  Last Deployment Error\n" >> $README_FILE
           echo "- Workflow: [Run Link]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)" >> $README_FILE
