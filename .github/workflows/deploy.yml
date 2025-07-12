@@ -73,28 +73,36 @@ jobs:
             ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST 'journalctl -u myapp.service -n 20 --no-pager' >> error.txt || echo "Could not fetch logs"
             cat error.txt
 
-            echo "error_log<<EOF" >> $GITHUB_OUTPUT
-            cat error.txt >> $GITHUB_OUTPUT
-            echo "EOF" >> $GITHUB_OUTPUT
+            # Save the error log in a GitHub Actions output-friendly way
+            echo "error_log<<EOF" >> $GITHUB_ENV
+            cat error.txt >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
+
             exit 1
           fi
 
       # Step 3: Add failure details to README.md
-      - name:  Append Failure to README
+      - name: Append Failure to README
         if: steps.deploy_step.outcome == 'failure'
-        
         run: |
+          # Clear old error section
           awk '/##  Last Deployment Error/{flag=1; next} /^## /{flag=0} !flag' $README_FILE > temp && mv temp $README_FILE
+
+          # Append new error content
           echo -e "\n##  Last Deployment Error\n" >> $README_FILE
           echo "- Workflow: [Run Link]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)" >> $README_FILE
           echo "- Time: $(date)\n" >> $README_FILE
-          echo "**Error Log:**\n\`\`\`\n${{ steps.deploy_step.outputs.error_log }}\n\`\`\`" >> $README_FILE
+          echo "**Error Log:**" >> $README_FILE
+          echo '```' >> $README_FILE
+          echo "$error_log" >> $README_FILE
+          echo '```' >> $README_FILE
 
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor }}@users.noreply.github.com"
+          git pull origin Release
           git add $README_FILE
-          git commit -m " Update README with deployment error"
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD:Release
+          git commit -m "Update README with latest deployment error"
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }
       # Step 4: Send email on failure
       - name:  Send Email on Failure
         if: steps.deploy_step.outcome == 'failure'
