@@ -1,0 +1,176 @@
+
+HOTEL SEARCH & BOOKING API DOCUMENTATION
+
+OVERVIEW
+--------
+This API allows users to:
+- Search for hotels near colleges in various cities
+- View hotel details and availability
+- Save hotels to favorites
+- Make and manage bookings
+
+DATA MODELS
+-----------
+
+HOTEL_ITEM
+{
+  hotel_id: int
+  image_paths: [string]
+  name: string
+  rating: float
+  distance_from_college: float
+  highlights: [string]
+  refundable_before_date: string (YYYY-MM-DD)
+  description: string
+  latitude: float
+  longitude: float
+}
+
+BOOKING_ITEM
+{
+  hotel_id: int
+  hotel_name: string
+  hotel_img_s3_paths: [string]
+  rating: float
+  distance_from_college: float
+  highlights: [string]
+  free_cancellation_date: string
+  partial_cancellation_date: string
+  description: string
+  latitude: float
+  longitude: float
+  starting_date: string (YYYY-MM-DD)
+  ending_date: string (YYYY-MM-DD)
+  booked_date: string (YYYY-MM-DD)
+  num_guests: int
+  amount: int
+}
+
+ENDPOINTS
+---------
+POST /customer/booking
+	Description: initiate booking Request
+
+	request body:
+		start_date : date
+		end_date :date
+		num_guests: int
+		hotel_id : int
+	
+	response:
+		200:
+			{
+				"token":str
+			}
+
+		422: hotel not available for booking
+			{
+				"error":"reason"
+			}
+			
+GET /colleges
+	Description: get list of all colleges
+	
+	Response:
+		200:
+			[
+				{
+					city_name:str
+					college_name:str
+					college_id:int
+				}
+			]
+
+GET /colleges/{college_id}/hotels
+	Description: Search for hotels in a specific city near a specific college.
+
+	Path Parameters:
+		- college_id (int)
+
+	Query Parameters:
+		- start_date (string, required, format: YYYY-MM-DD)
+		- end_date (string, required, format: YYYY-MM-DD)
+		- num_guests (int, required)
+		- offset (int, optional, default: 0)
+		- limit (int, optional, default: 10)
+		- sort_by (string, optional; values: distance, lowest_price, highest_price, rating)
+		- pricing_range_start (int, optional)
+		- pricing_range_end (int, optional)
+		- show_only_available (boolean, optional, default: false)
+		- show_only_refundable (boolean, optional, default: false)
+		- facilities (list of strings, optional, e.g., ["ac", "power_backup", "hot_water"])
+
+	Responses:
+		- 200 OK: List of HOTEL_ITEM
+		- 400 Bad Request: Invalid parameters
+		- 404 Not Found: No hotels match
+
+POST /customer/save
+	Save a hotel to favorites.
+
+	Request Body:
+		{
+			hotel_id: int
+		}
+	Response:
+		- 200 OK: Hotel saved
+		- 400 Bad Request: Invalid hotel_id
+
+GET /customer/save
+	Retrieve saved hotels.
+
+	Query Parameters:
+		- offset (int, default: 0)
+		- limit (int, default: 10)
+
+	Response:
+		- 200 OK: List of HOTEL_ITEM
+
+DELETE /customer/save/{hotel_id}
+	Remove a hotel from saved list.
+
+	Path Parameters:
+		- hotel_id (int)
+
+	Response:
+		- 200 OK: Hotel removed
+		- 404 Not Found: Hotel not found in saved list
+
+GET /customer/bookings
+	Retrieve user's bookings.
+
+	Query Parameters:
+		- offset (int, default: 0)
+		- limit (int, default: 10)
+
+	Response:
+		- 200 OK: List of BOOKING_ITEM
+
+	DELETE /customer/booking/{booking_id}
+		Cancel a booking.
+
+	Path Parameters:
+		- booking_id (int)
+
+		Response:
+		- 200 OK: Booking deleted
+		- 404 Not Found: Booking ID not found
+
+ERROR FORMAT
+------------
+All errors return the following format:
+
+{
+  error: "Description of the issue"
+}
+
+Example:
+{
+  error: "Invalid date format. Use YYYY-MM-DD."
+}
+
+NOTES
+-----
+	- All dates must be in YYYY-MM-DD format.
+	- All monetary values are in INR.
+	- Boolean values must be true or false (not string "true").

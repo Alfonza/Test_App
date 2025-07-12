@@ -1,0 +1,246 @@
+{
+    "hotels": [
+        {
+            "name": "Griffin Ltd",
+            "id": 1,
+            "college_id": 1,
+            "num_images": 2,
+            "max_guests": 1,
+            "per_day_price": 1161,
+            "city": 3,
+            "description": "Data result above require. Significant talk modern.",
+            "place": "Jennifer Station",
+            "rating": 3.0,
+            "distance_from_college": 5.71,
+            "refundable_before_day": 4,
+            "owner_phone_num": "8075652837"
+        },
+        {
+            "name": "Bell, Williams and Santiago",
+            "id": 2,
+            "college_id": 2,
+            "num_images": 4,
+            "max_guests": 5,
+            "per_day_price": 962,
+            "city": 3,
+            "description": "Result ago customer much history maintain assume.",
+            "place": "Shelton Tunnel",
+            "rating": 3.3,
+            "distance_from_college": 10.0,
+            "refundable_before_day": 4,
+            "owner_phone_num": "1046747966"
+        },
+        {
+            "name": "Miller-Wells",
+            "id": 3,
+            "college_id": 2,
+            "num_images": 2,
+            "max_guests": 2,
+            "per_day_price": 1440,
+            "city": 2,
+            "description": "Also today treatment power. Hit season husband party way throughout. Knowledge success culture something effort worker.",
+            "place": "Courtney Isle",
+            "rating": 3.9,
+            "distance_from_college": 4.92,
+            "refundable_before_day": 7,
+            "owner_phone_num": "4022991916"
+        },
+        {
+            "name": "Davis-Chen",
+            "id": 4,
+            "college_id": 3,
+            "num_images": 2,
+            "max_guests": 1,
+            "per_day_price": 2858,
+            "city": 2,
+            "description": "Those might simple dream talk never nice test.",
+            "place": "Mccall Way",
+            "rating": 3.8,
+            "distance_from_college": 9.82,
+            "refundable_before_day": 6,
+            "owner_phone_num": "8841097051"
+        },
+        {
+            "name": "Li Ltd",
+            "id": 5,
+            "college_id": 3,
+            "num_images": 4,
+            "max_guests": 1,
+            "per_day_price": 614,
+            "city": 1,
+            "description": "On deep science three. Score without wait. Interest address clearly eye line at. Focus direction seek data southern.",
+            "place": "Pamela Row",
+            "rating": 3.0,
+            "distance_from_college": 4.66,
+            "refundable_before_day": 2,
+            "owner_phone_num": "5141658342"
+        },
+        {
+            "name": "Costa-Morales",
+            "id": 6,
+            "college_id": 1,
+            "num_images": 3,
+            "max_guests": 3,
+            "per_day_price": 2113,
+            "city": 1,
+            "description": "Stand wall pressure speech term happy detail. Director mother full put. Nice beautiful everybody woman she general environment.",
+            "place": "Leslie Loaf",
+            "rating": 3.5,
+            "distance_from_college": 6.64,
+            "refundable_before_day": 2,
+            "owner_phone_num": "5939907918"
+        },
+        {
+            "name": "Oconnor-Hunter",
+            "id": 7,
+            "college_id": 2,
+            "num_images": 4,
+            "max_guests": 4,
+            "per_day_price": 2499,
+            "city": 4,
+            "description": "Fact line opportunity thing eye. Kind arrive realize participant character other simple.",
+            "place": "Jessica Roads",
+            "rating": 4.2,
+            "distance_from_college": 7.76,
+            "refundable_before_day": 2,
+            "owner_phone_num": "2376210188"
+        },
+        {
+            "name": "Lopez Inc",
+            "id": 8,
+            "college_id": 3,
+            "num_images": 4,
+            "max_guests": 5,
+            "per_day_price": 1418,
+            "city": 4,
+            "description": "Gun may professional friend. May computer of share agree. Fast prove stop.",
+            "place": "Amy Fort",
+            "rating": 3.0,
+            "distance_from_college": 1.59,
+            "refundable_before_day": 4,
+            "owner_phone_num": "6919051649"
+        },
+        {
+            "name": "Pena-Brown",
+            "id": 9,
+            "college_id": 4,
+            "num_images": 1,
+            "max_guests": 1,
+            "per_day_price": 2484,
+            "city": 3,
+            "description": "Fish best local seem cover yeah the live. Away since here employee.",
+            "place": "Timothy Coves",
+            "rating": 3.6,
+            "distance_from_college": 8.57,
+            "refundable_before_day": 2,
+            "owner_phone_num": "0423310733"
+        },
+        {
+            "name": "Hartman LLC",
+            "id": 10,
+            "college_id": 1,
+            "num_images": 2,
+            "max_guests": 5,
+            "per_day_price": 1280,
+            "city": 3,
+            "description": "Box main local state road. Mission health half challenge foot lawyer.",
+            "place": "Daniel Station",
+            "rating": 3.6,
+            "distance_from_college": 8.5,
+            "refundable_before_day": 4,
+            "owner_phone_num": "9369596094"
+        }
+    ],
+    "cities": [
+        {
+            "id": 1,
+            "name": "Ethanstad",
+            "latitude": "-21.705060",
+            "longitude": "16.187357"
+        },
+        {
+            "id": 2,
+            "name": "Rosebury",
+            "latitude": "17.660412",
+            "longitude": "-150.015974"
+        },
+        {
+            "id": 3,
+            "name": "New Erinfort",
+            "latitude": "72.315026",
+            "longitude": "15.275821"
+        }
+    ],
+    "colleges": [
+        {
+            "id": 1,
+            "name": "Institute of Science",
+            "latitude": "-68.2148305",
+            "longitude": "-157.194689",
+            "city_id": 2
+        },
+        {
+            "id": 2,
+            "name": "School of Business",
+            "latitude": "-62.2442255",
+            "longitude": "-38.471124",
+            "city_id": 3
+        },
+        {
+            "id": 3,
+            "name": "Institute of Management",
+            "latitude": "36.7396105",
+            "longitude": "-81.708409",
+            "city_id": 1
+        },
+        {
+            "id": 4,
+            "name": "Academy of Business",
+            "latitude": "59.2699845",
+            "longitude": "160.687109",
+            "city_id": 2
+        },
+        {
+            "id": 5,
+            "name": "University of Arts",
+            "latitude": "77.3319885",
+            "longitude": "-20.832970",
+            "city_id": 3
+        },
+        {
+            "id": 6,
+            "name": "University of Arts",
+            "latitude": "-21.024641",
+            "longitude": "-141.856792",
+            "city_id": 1
+        },
+        {
+            "id": 7,
+            "name": "Institute of Management",
+            "latitude": "11.339936",
+            "longitude": "-178.442772",
+            "city_id": 2
+        },
+        {
+            "id": 8,
+            "name": "Institute of Technology",
+            "latitude": "55.937317",
+            "longitude": "151.813712",
+            "city_id": 3
+        },
+        {
+            "id": 9,
+            "name": "College of Medicine",
+            "latitude": "78.340081",
+            "longitude": "-115.192383",
+            "city_id": 1
+        },
+        {
+            "id": 10,
+            "name": "School of Arts",
+            "latitude": "7.567169",
+            "longitude": "-177.634954",
+            "city_id": 2
+        }
+    ]
+}

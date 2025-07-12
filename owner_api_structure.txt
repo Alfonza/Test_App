@@ -1,0 +1,126 @@
+All the endpoints except generate_otp and validate_otp should have JWT authentication and provide authentication error codes 401 and 403
+
+
+Components
+    {
+        error_code:str=INVALID_VALUE_FOR_FIELD,ITEM_CONFLICT
+        error_msg:str
+    }
+
+
+DELETE /hotels/owner_bookings/{item_id} to delete an owner booking entry
+    Response body
+        200: item deleted  successfully
+GET /hotels/owner_bookings for getting all owner bookings
+    authentication: JWT
+    Response body
+        200:
+            [
+                {
+                    booking_id:int
+                    start_date:iso-date-format
+                    end_date: iso-date-format
+                    phone_num: 10  digit number
+                    name:str
+                    num_guests:int
+                }
+            ]
+
+DELETE /hotels/{hotel_id}/hidden_dates/{item_id} to delete hide entry
+    authentication: JWT
+    Response body:
+        200: deleted successfully
+
+
+POST /hotels/owner_bookings for owner to book customers
+    authentication: JWT
+    Request body
+        start_date:iso-date-format
+        end_date:iso-date-format
+        phone_num: 10 digit number
+        name: str
+        num_guests: int
+
+    Response body
+        200:
+            {
+                item_id:int
+            }
+        400: start_date and end date not in iso format. phone number is not exactly 10 digits. number of guests is 0 or -ve
+        409: num_guests is higher than actual available rooms
+
+
+
+
+GET /hotels/hidden_dates/ to get all previous deactivation entries
+    authentication: JWT
+    Response body
+        200: successful Response
+            [
+                {
+                    start_date:date
+                    end_date:date
+                }
+            ]
+POST /hotels/hidden_dates to deactivate hotels from the dates specified.
+    authentication: JWT
+    Request body
+        start_date:iso-date-format
+        end_date:iso-date-format
+    Response body
+        200: successful response
+            {
+                item_id:int
+            }
+        400: start_date and end_date is not valid or not in YYYY-MM-DD format
+        409: cannot create row due to booking conflict. booking conflict means there is already bookings occured during specified dates
+
+POST /generate_otp to generate otp for specified number
+    Request body
+        phone_num: 10 digit number in string format
+    Response body:
+        200: OTP  generated successfully
+        503: OTP generation failed due to internal error
+        429: maximum retry limit exceeded. please retry after [time_seconds] delay
+        422: phone number not exactly 10 digits
+        403: phone number is exactly 10 digits. but is not valid. Example: 0000000000
+
+POST /validate_otp to validate otp for specified number
+    Request body
+        phone_num: 10 digit number
+        otp:int
+    Response body
+        200: OTP  validation   successful
+            {
+                access_token:
+            }
+        422: OTP is not 6 digits or phone number is not exactly 10 digits
+        403: OTP validation failed
+        503: OTP service down
+        429: OTP verification limit exceeded specified threshold limits. cannot continue anymore
+
+GET /hotels/bookings/{date} to get booking list of specific date
+    authentication: JWT
+    Response body
+        200: successful response
+            [
+                {
+                    name:str,
+                    phone_num:number,
+                    num_guests:int
+                }
+            ]
+        422: the given date is not valid or date is not in YYYY-MM-DD format.  Example  Feb 32, 01-01-2025
+            400_RESPONSE_BODY
+
+
+
+
+GET /hotels/calendar/{year} to get number of bookings in each day of the specified year
+    authentication: JWT
+    Response body
+        200: successful response
+            {
+                iso-date-format:booking
+            }
+        400: given year  is not valid.  example  20232

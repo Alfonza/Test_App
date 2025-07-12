@@ -1,0 +1,87 @@
+CREATE TABLE city (
+    city_id SERIAL PRIMARY KEY,
+    city_name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE location (
+    id SERIAL PRIMARY KEY,
+    location VARCHAR(255) NOT NULL,
+    city_id INT NOT NULL,
+    FOREIGN KEY (city_id) REFERENCES city(city_id) ON DELETE CASCADE
+);
+
+CREATE TABLE owner (
+    id SERIAL PRIMARY KEY,
+    owner_phone_num BIGINT UNIQUE NOT NULL,
+    owner_name VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE highlights (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) UNIQUE NOT NULL
+);
+
+CREATE TABLE hotel_facility (
+    hotel_id INT NOT NULL,
+    highlights_id INT NOT NULL,
+    PRIMARY KEY (hotel_id, highlights_id),
+    FOREIGN KEY (hotel_id) REFERENCES hotel(id) ON DELETE CASCADE,
+    FOREIGN KEY (highlights_id) REFERENCES facility(id) ON DELETE CASCADE
+);
+
+CREATE TABLE hotel (
+    id SERIAL PRIMARY KEY,
+    owner_id INT NOT NULL,
+    hotel_name VARCHAR(50) UNIQUE NOT NULL,
+    location_id INT NOT NULL,
+    latitude DOUBLE PRECISION NOT NULL,
+    longitude DOUBLE PRECISION NOT NULL,
+    rating DOUBLE PRECISION CHECK (rating BETWEEN 0 AND 5), -- Ensuring valid ratings
+    price_per_night INT NOT NULL CHECK (price_per_night >= 0), -- Ensuring non-negative price
+    description VARCHAR(200),
+    cancellation_policy_id VARCHAR(200),
+    image_names_list JSON,
+    capacity INT NOT NULL CHECK (capacity >= 0), -- Ensuring non-negative capacity
+    FOREIGN KEY (owner_id) REFERENCES owner(id) ON DELETE CASCADE,
+    FOREIGN KEY (location_id) REFERENCES location(id) ON DELETE CASCADE
+);
+
+CREATE TABLE customer (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    phone_num BIGINT UNIQUE NOT NULL
+);
+
+CREATE TABLE wishlist (
+    id SERIAL PRIMARY KEY,
+    customer_id INT NOT NULL,
+    hotel_id INT NOT NULL,
+    FOREIGN KEY (customer_id) REFERENCES customer(id) ON DELETE CASCADE,
+    FOREIGN KEY (hotel_id) REFERENCES hotel(id) ON DELETE CASCADE,
+    UNIQUE (customer_id, hotel_id) -- Preventing duplicate wishlist entries
+);
+
+CREATE TABLE bookings (
+    booking_id SERIAL PRIMARY KEY,
+    customer_id INT NULL,
+    customer_name string NULL,
+    customer_phone_num string NULL,
+    hotel_id INT NOT NULL,
+    num_guests INT NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    money_transfer_id VARCHAR NULL,
+    booking_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    booking_status VARCHAR CHECK (booking_status IN ('booked', 'cancelled', 'completed')) NULL,
+    mode_of_payment VARCHAR CHECK (mode_of_payment IN ('gpay', 'phonepay', 'paytm', 'card')) NULL,
+    booked_by_owner BOOLEAN NOT NULL DEFAULT FALSE,
+    FOREIGN KEY (customer_id) REFERENCES customer(id) ON DELETE SET NULL,
+    FOREIGN KEY (hotel_id) REFERENCES hotel(id) ON DELETE CASCADE
+);
+
+CREATE TABLE hotel_deactivations (
+    hotel_id INT NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    FOREIGN KEY (hotel_id) REFERENCES hotel(id) ON DELETE CASCADE
+);

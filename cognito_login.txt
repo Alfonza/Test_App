@@ -1,0 +1,11 @@
+User enters phone/email/password
+        ↓
+Flutter calls Cognito `SignUp` API
+        ↓
+Cognito sends OTP via SMS/email
+        ↓
+User enters OTP → Flutter calls `ConfirmSignUp`
+        ↓
+User logs in → Cognito returns ID/Access/Refresh tokens
+        ↓
+Use tokens to call your backend APIs securely

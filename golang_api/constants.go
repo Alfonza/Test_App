@@ -1,0 +1,6 @@
+package main
+
+var INVALID_FIELD string = "INVALID_FIELD"
+var AUTH_FAILED string = "AUTH_FAILED"
+var UNKNOWN_ERROR string = "UNKNOWN_ERROR"
+var BUSINESS_LOGIC_ERROR string = "BUSINESS_LOGIC_ERROR"

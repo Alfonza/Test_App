@@ -1,0 +1,113 @@
+Information about this document
+-------------------------------
+iso-date-format = YYYY-MM-DD
+iso-datetime-format = YYY-MM-DD HH:MM:SS
+
+
+table structures for user functinonality
+-------------------------------
+location{
+    id:int
+    location:string
+    city_id: foreign_key(city->city_id)
+}
+city {
+    city_id:int
+    city_name: string
+}
+
+hotel{
+    id:int primary_key
+    owner_id:int foreign_key(owner->id)
+    hotel_name:varchar(50) unique_key
+    location_id: int foreign_key(location->id)
+    latitude: float
+    longitude: float
+    rating: float
+    price_per_night: int
+    description: varchar(200)
+    cancellation_policy_id: varchar(200) 
+    image_names_list: varchar(200)
+    capacity: int
+}
+
+wishlist{
+    id: int primary_key
+    customer_id: int foreign_key(customer->id)
+    hotel_id: int foreign_key(hotel->id)
+}
+
+owner{
+    id: int primary_key
+    owner_phone_num: int unique_key
+    owner_name: varchar(50)
+}
+
+customer{
+    id: int primary_key
+    name : string
+    phone_num : int unique_key
+}
+
+
+bookings{
+    booking_id: int primary_key
+    customer_id: int nullabe optional foreign_key(customer->id)
+    hotel_id: int foreign_key(hotel->id)
+    num_guests: int
+    start_date: iso-date-format
+    end_date: iso-date-format
+    money_transfer_id: nullabe string
+    booking_date: iso-datetime-format
+    booking_status: nullable enum(booked,cancelled,completed)
+    mode_of_payment: nullable enum(gpay,phonepay,paytm,card) 
+    booked_by_owner: boolean
+}
+
+hotel_deactivations{
+    hotel_id: int foreign_key(hotel->id)
+    start_date: iso-date-format
+    end_date: iso-date-format
+}
+
+table structures for customer data customer_analytics
+------------------------------------------
+user_device_info {
+    device_id	BIGINT (PK)	Unique identifier for the device
+    customer_id	BIGINT (FK)	Foreign key referencing Users Table
+    device_model	VARCHAR(100)	Model of the device (e.g., iPhone 14, Samsung S21)
+    os	VARCHAR(50)	Operating System (iOS, Android, etc.)
+    os_version	VARCHAR(20)	Version of the OS
+    app_version	VARCHAR(20)	Installed app version
+    screen_size	VARCHAR(20)	Screen resolution
+    carrier	VARCHAR(50)	Mobile network provider
+    installed_at	TIMESTAMP	First time the app was installed
+}
+
+session_info{
+    session_id	BIGINT (PK)	Unique session identifier
+    user_id	BIGINT (FK)	Foreign key referencing Users Table
+    session_start	TIMESTAMP	Start time of the session
+    session_end	TIMESTAMP	End time of the session
+    duration	INT	Session duration in seconds
+    device_id	BIGINT (FK)	Device used in the session
+}
+
+customer_interaction{
+    event_id	BIGINT (PK)	Unique event identifier
+    user_id	BIGINT (FK)	Foreign key referencing Users Table
+    event_name	VARCHAR(100)	Name of the event (e.g., "app_open", "purchase", "video_play","button_click","focus")
+    event_timestamp	TIMESTAMP	When the event occurred
+    event_properties	JSON	Additional metadata
+    session_id (FK) foreign_key referencing session table
+}
+
+app_crash_log{
+    crash_id	BIGINT (PK)	Unique crash identifier
+    user_id	BIGINT (FK)	Foreign key referencing Users Table
+    device_id	BIGINT (FK)	Foreign key referencing Device Table
+    os_version	VARCHAR(20)	OS version at the time of the crash
+    app_version	VARCHAR(20)	App version at the time of the crash
+    crash_log	TEXT	Log details of the crash
+    occurred_at	TIMESTAMP	When the crash happened
+}
