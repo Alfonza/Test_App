@@ -17,10 +17,10 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
 
-      # Step 1: Clear previous error section in README.md
-      - name:  Clear Old Error Section
-        run: |
-          awk '/##  Last Deployment Error/{flag=1; next} /^## /{flag=0} !flag' $README_FILE > temp && mv temp $README_FILE
+      # # Step 1: Clear previous error section in README.md
+      # - name:  Clear Old Error Section
+      #   run: |
+      #     awk '/##  Last Deployment Error/{flag=1; next} /^## /{flag=0} !flag' $README_FILE > temp && mv temp $README_FILE
 
       # # Step 2: Setup Python and install requirements (for tests)
       # - name:  Setup Python
@@ -84,6 +84,7 @@ jobs:
         if: steps.deploy_step.outcome == 'failure'
         
         run: |
+          awk '/##  Last Deployment Error/{flag=1; next} /^## /{flag=0} !flag' $README_FILE > temp && mv temp $README_FILE
           echo -e "\n##  Last Deployment Error\n" >> $README_FILE
           echo "- Workflow: [Run Link]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)" >> $README_FILE
           echo "- Time: $(date)\n" >> $README_FILE
