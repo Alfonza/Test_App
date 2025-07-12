@@ -33,18 +33,18 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST <<EOF
             set -e
             cd /home/ubuntu/CICD_TEST/Test_App
-            git pull origin Release
-
+            # cd /home/ubuntu/navy_mate_backend
             if [ ! -d "venv" ]; then
               python3 -m venv venv
             fi
-
             source venv/bin/activate
+            git pull origin Release
+             
+            # cd navy_mate_backend 
             python3 -m pip install --upgrade pip
             python3 -m pip install -r requirements.txt
             # python3 -m pytest
 
-            # cd app
             python3 main.py
           EOF
           STATUS=$?

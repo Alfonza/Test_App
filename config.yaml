@@ -1,6 +1,6 @@
 database:
-  host: localhost
+  host: zeamigo-database.c76gg2i8sjkw.ap-south-1.rds.amazonaws.com
   port: 5432
-  user: ash
-  password: ash
-  name: navy_mate
+  user: ze_amigo_2025
+  password: ze-amigO-5202
+  name: zeamigo_db
