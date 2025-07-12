@@ -48,7 +48,7 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST <<EOF
             set -e
             cd /home/ubuntu/app
-            git pull origin release
+            git pull origin Release
 
             if [ ! -d "venv" ]; then
               python3 -m venv venv
@@ -90,7 +90,7 @@ jobs:
           git config user.email "actions@github.com"
           git add $README_FILE
           git commit -m " Update README with deployment error"
-          git push https://${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }} HEAD:release
+          git push https://${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }} HEAD:Release
 
       # Step 4: Send email on failure
       - name:  Send Email on Failure
