@@ -126,7 +126,7 @@ jobs:
       #     VERSION_TAG="v1.0.${{ github.run_number }}"
       #     git tag $VERSION_TAG
       #     git push origin $VERSION_TAG
-      - name: 🔖 Create Git Tag
+      - name: Create Git Tag
         if: steps.deploy_step.outcome == 'success'
         run: |
           git config user.name "github-actions"
@@ -148,6 +148,6 @@ jobs:
             NEW_TAG="${BASE}${NEW_NUMBER}"
           fi
 
-          echo "🔖 Creating new tag: $NEW_TAG"
+          echo "Creating new tag: $NEW_TAG"
           git tag "$NEW_TAG"
           git push origin "$NEW_TAG"
